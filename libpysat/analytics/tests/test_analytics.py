@@ -33,3 +33,15 @@ class Test_Analytics(unittest.TestCase):
 
     def test_band_center(self):
         pass
+
+    def test_band_asymmetry(self):
+        pass
+
+    def test_get_noise(self):
+        pass
+
+    def test_sigma_clip(self):
+        pass
+
+    def test_meancenter(self):
+        pass
