@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from libpysat.transform import utils
+from libpysat.analytics import analytics
 
 
 class Test_Analytics(unittest.TestCase):
