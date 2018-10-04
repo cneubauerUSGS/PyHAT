@@ -35,10 +35,9 @@ def ccam_denoise(sp_in, sig = 3, n_iter = 4):
     Returns
     -------
     : float
-        The denoised spectrum
-
-    : float
         Removed noise
+    : ndarray
+        The denoised spectrum
     """
 
     s = len(sp_in)
