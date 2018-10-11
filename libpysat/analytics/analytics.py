@@ -40,7 +40,6 @@ def band_minima(spectrum, low_endmember=None, high_endmember=None):
     if not high_endmember:
         high_endmember = x[-1]
 
-    # not inclusive + 1
     ny = y[low_endmember:high_endmember + 1]
 
     minidx = ny.idxmin()
@@ -59,7 +58,7 @@ def band_center(spectrum, low_endmember=None, high_endmember=None, degree=3):
     if not high_endmember:
         high_endmember = x[-1]
 
-    ny = y[low_endmember:high_endmember]
+    ny = y[low_endmember:high_endmember + 1]
 
     fit = np.polyfit(ny.index, ny, degree)
 
@@ -83,7 +82,7 @@ def band_area(spectrum, low_endmember=None, high_endmember=None):
     if not high_endmember:
         high_endmember = x[-1]
 
-    ny = y[low_endmember:high_endmember]
+    ny = y[low_endmember:high_endmember + 1]
 
     return np.trapz(-ny[ny <= 1.0])
 
