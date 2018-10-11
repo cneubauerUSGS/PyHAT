@@ -24,13 +24,6 @@ class Test_Analytics(unittest.TestCase):
         with self.assertRaises(ValueError):
             minidx, minvalue = analytics.band_minima(self.series, 6, 1)
 
-    def test_band_area(self):
-        x = np.arange(-2, 2, 0.1)
-        y = x ** 2
-        parabola = pd.Series(y[y <= 1], index=x[y <= 1])
-        area = analytics.band_area(parabola)
-        self.assertAlmostEqual(area, -5.7950)
-
     def test_band_center(self):
         center, center_fit = analytics.band_center(self.series)
         print(center_fit)
@@ -43,9 +36,22 @@ class Test_Analytics(unittest.TestCase):
         self.assertAlmostEqual(center_fit.median(), 0.56080959)
         self.assertAlmostEqual(center_fit.std(), 0.03903149)
 
-    def test_band_asymmetry(self):
-        pass
+    def test_band_area(self):
+        x = np.arange(-2, 2, 0.1)
+        y = x ** 2
+        parabola = pd.Series(y[y <= 1], index=x[y <= 1])
+        area = analytics.band_area(parabola)
+        self.assertAlmostEqual(area, -5.7950)
 
+    def test_band_asymmetry(self):
+        asymmetry_none = band_asymmetry(self.series)
+        self.assertEqual(asymmetry, 0)
+
+        asymmetry_all = band_asymmetry(pd.DataFrame(0, index=range(2), columns=range(10)))
+        self.assertEqual(asymmetry, 1)
+
+        assymetry = band_asymmetry(pd.DataFrame(np.random.randint(0,100,size=(100, 2))))
+        
     def test_get_noise(self):
         pass
 

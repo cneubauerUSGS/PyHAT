@@ -117,7 +117,7 @@ def band_asymmetry(spectrum, low_endmember=None, high_endmember=None):
     if not high_endmember:
         high_endmember = x[-1]
 
-    ny = y[low_endmember:high_endmember]
+    ny = y[low_endmember:high_endmember + 1]
 
     center, _ = band_center(ny, low_endmember, high_endmember)
 
@@ -215,44 +215,3 @@ def sigma_clip(data, sigma_clip=3.0, n_iter=2.0):
             count = len(buff[index])
 
     return sig, mean
-
-
-
-
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Mar 27 13:07:07 2016
-
-@author: rbanderson
-"""
-
-def meancenter(df, col, previous_mean=None):
-    """
-    Caution: mystery function
-
-    Parameters
-    ----------
-    df : object
-
-    col : object
-
-    previous_mean : object
-
-    Returns
-    -------
-    df : object
-
-    mean_vect : object
-    """
-    if previous_mean is not None:
-        mean_vect = previous_mean
-    else:
-        mean_vect = df[col].mean(axis=0)
-
-    # check that the wavelength values match
-    if np.array_equal(mean_vect.index.values, df[col].columns.values):
-        df[col] = df[col].sub(mean_vect.values, axis=1)
-    else:
-        print("Can't mean center! Wavelengths don't match!")
-
-    return df, mean_vect
