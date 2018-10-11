@@ -40,7 +40,8 @@ def band_minima(spectrum, low_endmember=None, high_endmember=None):
     if not high_endmember:
         high_endmember = x[-1]
 
-    ny = y[low_endmember:high_endmember]
+    # not inclusive + 1
+    ny = y[low_endmember:high_endmember + 1]
 
     minidx = ny.idxmin()
     minvalue = ny.min()
