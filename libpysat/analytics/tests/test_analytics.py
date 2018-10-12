@@ -26,7 +26,6 @@ class Test_Analytics(unittest.TestCase):
 
     def test_band_center(self):
         center, center_fit = analytics.band_center(self.series)
-        print(center_fit)
         self.assertEqual(center[0], 6)
         self.assertAlmostEqual(center[1], 0.50635700)
         self.assertAlmostEqual(center_fit[0], 0.56741928)
@@ -44,19 +43,8 @@ class Test_Analytics(unittest.TestCase):
         self.assertAlmostEqual(area, -5.7950)
 
     def test_band_asymmetry(self):
-        asymmetry_none = band_asymmetry(self.series)
-        self.assertEqual(asymmetry, 0)
+        assymetry = analytics.band_asymmetry(self.series)
+        self.assertEqual(assymetry, 1.0)
 
-        asymmetry_all = band_asymmetry(pd.DataFrame(0, index=range(2), columns=range(10)))
-        self.assertEqual(asymmetry, 1)
-
-        assymetry = band_asymmetry(pd.DataFrame(np.random.randint(0,100,size=(100, 2))))
-        
-    def test_get_noise(self):
-        pass
-
-    def test_sigma_clip(self):
-        pass
-
-    def test_meancenter(self):
-        pass
+        assymetry = analytics.band_asymmetry(pd.Series(np.ones(24)))
+        self.assertAlmostEqual(assymetry, 0.23076923)
