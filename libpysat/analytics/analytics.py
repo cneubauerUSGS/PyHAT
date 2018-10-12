@@ -48,7 +48,6 @@ def band_minima(spectrum, low_endmember=None, high_endmember=None):
     return minidx, minvalue
 
 
-
 def band_center(spectrum, low_endmember=None, high_endmember=None, degree=3):
     x = spectrum.index
     y = spectrum
@@ -109,7 +108,7 @@ def band_asymmetry(spectrum, low_endmember=None, high_endmember=None):
         Where 100% is completely asymmetrical and 0 is completely symmetrical
     """
 
-    x = specturm.index
+    x = spectrum.index
     y = spectrum
 
     if not low_endmember:
@@ -120,9 +119,8 @@ def band_asymmetry(spectrum, low_endmember=None, high_endmember=None):
     ny = y[low_endmember:high_endmember + 1]
 
     center, _ = band_center(ny, low_endmember, high_endmember)
-
-    area_left = band_area(ny[:center], low_endmember, high_endmember)
-    area_right = band_area(ny[center:], low_endmember, high_endmember)
+    area_left = band_area(ny[:center[0]], low_endmember, high_endmember)
+    area_right = band_area(ny[center[0]:], low_endmember, high_endmember)
 
     asymmetry = (area_left - area_right) / (area_left + area_right)
     return asymmetry
@@ -154,9 +152,9 @@ def get_noise(data, n_iter = 3):
         nli = vsize[1]
         npz = vsize[2]
         indices = range(npz - 2) + 1
-        d_cube = numpy.array(nco, nli, npz)
-        c1 = -1. / numpy.sqrt(6.)
-        c2 = 2. / numpy.sqrt(6.)
+        d_cube = np.array(nco, nli, npz)
+        c1 = -1. / np.sqrt(6.)
+        c2 = 2. / np.sqrt(6.)
         d_cube[:, :, 1:npz - 1] = c1 * (data[:, :, indices - 1] + data[:, :, indices + 1]) + c2 * data[:, :, indices]
         d_cube[:, :, 0] = c2 * (data[:, :, 0] - Data[:, :, 1])
         d_cube[:, :, npz - 1] = c2 * (data[:, :, npz - 1] - data[:, :, npz - 2])
@@ -202,16 +200,16 @@ def sigma_clip(data, sigma_clip=3.0, n_iter=2.0):
     sig = 0.
     buff = data
 
-    mean = numpy.sum(buff) / len(buff)
-    sig = numpy.std(buff)
-    index = numpy.where(abs(buff - m) < sigma_clip * sig)
+    mean = np.sum(buff) / len(buff)
+    sig = np.std(buff)
+    index = np.where(abs(buff - mean) < sigma_clip * sig)
     count = len(buff[index])
 
-    for i in range(1, Ni):
+    for i in range(1, n_iter):
         if count > 0:
-            mean = numpy.sum(buff[index]) / len(buff[index])
-            sig = numpy.std(buff[index])
-            index = numpy.where(abs(buff - m) < sigma_clip * sig)
+            mean = np.sum(buff[index]) / len(buff[index])
+            sig = np.std(buff[index])
+            index = np.where(abs(buff - mean) < sigma_clip * sig)
             count = len(buff[index])
 
     return sig, mean
