@@ -48,7 +48,3 @@ class Test_Analytics(unittest.TestCase):
 
         assymetry = analytics.band_asymmetry(pd.Series(np.ones(24)))
         self.assertAlmostEqual(assymetry, 0.23076923)
-
-    def test_get_noise(self):
-        noise = analytics.get_noise(self.series.values)
-        self.assertAlmostEqual(noise, 0.25580814)
