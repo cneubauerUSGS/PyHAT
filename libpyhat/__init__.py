@@ -2,6 +2,7 @@ __version__ = "0.1.0"
 
 #from libpyhat import *
 
+from libpyhat import analytics
 from libpyhat import derived
 from libpyhat import transform
 from libpyhat import regression
