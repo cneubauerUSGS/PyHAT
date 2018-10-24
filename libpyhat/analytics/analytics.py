@@ -9,14 +9,13 @@ def band_minima(spectrum, low_endmember=None, high_endmember=None):
 
     Parameters
     ==========
-    spectrum : pd.series
-               Pandas series
+    spectrum : nd.Array
 
-    low_endmember : float
+    low_endmember : int
                     The low wavelength
 
-    high_endmember : float
-                     The high wavelength
+    high_endmember : int
+                    The high wavelength
 
     Returns
     =======
@@ -26,36 +25,34 @@ def band_minima(spectrum, low_endmember=None, high_endmember=None):
     minvalue : float
                The observed minimal value
     """
-    x = spectrum.index
-    y = spectrum
 
     if not low_endmember:
-        low_endmember = x[0]
+        low_endmember = 0
+
     if not high_endmember:
-        high_endmember = x[-1]
+        high_endmember = -1
 
-    ny = y[low_endmember:high_endmember + 1]
+    slice = spectrum[low_endmember:high_endmember]
 
-    minidx = ny.idxmin()
-    minvalue = ny.min()
+    minvalue = np.amin(slice)
+    minidx = np.where(slice == minvalue)[0]
 
     return minidx, minvalue
 
 
 def band_center(spectrum, low_endmember=None, high_endmember=None, degree=3):
-    x = spectrum.index
-    y = spectrum
 
     if not low_endmember:
-        low_endmember = x[0]
+        low_endmember = 0
     if not high_endmember:
-        high_endmember = x[-1]
+        high_endmember = -1
 
-    ny = y[low_endmember:high_endmember + 1]
+    slice = spectrum[low_endmember:high_endmember]
+    slice_indices = np.indices(slice.shape)[0]
 
-    fit = np.polyfit(ny.index, ny, degree)
+    fit = np.polyfit(slice_indices, slice, degree)
 
-    center_fit = Series(np.polyval(fit, ny.index), ny.index)
+    center_fit = np.polyval(fit, slice_indices)
     center = band_minima(center_fit)
 
     return center, center_fit
@@ -66,18 +63,13 @@ def band_area(spectrum, low_endmember=None, high_endmember=None):
     Compute the area under the curve between two endpoints where the
     y-value <= 1.
     """
-
-    x = spectrum.index
-    y = spectrum
-
     if not low_endmember:
-        low_endmember = x[0]
+        low_endmember = 0
     if not high_endmember:
-        high_endmember = x[-1]
+        high_endmember = -1
 
-    ny = y[low_endmember:high_endmember + 1]
-
-    return np.trapz(-ny[ny <= 1.0])
+    slice = spectrum[low_endmember:high_endmember]
+    return np.trapz(np.where(slice <= 1.0))
 
 
 def band_asymmetry(spectrum, low_endmember=None, high_endmember=None):
@@ -102,19 +94,17 @@ def band_asymmetry(spectrum, low_endmember=None, high_endmember=None):
         Where 100% is completely asymmetrical and 0 is completely symmetrical
     """
 
-    x = spectrum.index
-    y = spectrum
-
     if not low_endmember:
-        low_endmember = x[0]
+        low_endmember = 0
     if not high_endmember:
-        high_endmember = x[-1]
+        high_endmember = -1
 
-    ny = y[low_endmember:high_endmember + 1]
+    slice = spectrum[low_endmember:high_endmember]
 
-    center, _ = band_center(ny, low_endmember, high_endmember)
-    area_left = band_area(ny[:center[0]], low_endmember, high_endmember)
-    area_right = band_area(ny[center[0]:], low_endmember, high_endmember)
+    center, _ = band_center(slice, low_endmember, high_endmember)
 
-    asymmetry = (area_left - area_right) / (area_left + area_right)
-    return asymmetry
+    area_left = band_area(slice[:center[0][0]], low_endmember, high_endmember)
+    area_right = band_area(slice[center[0][0]:], low_endmember, high_endmember)
+
+    asymmetry = abs((area_left - area_right) / (area_left + area_right))
+    return asymmetry[0]
