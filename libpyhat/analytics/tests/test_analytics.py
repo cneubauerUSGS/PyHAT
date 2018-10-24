@@ -2,6 +2,7 @@ import unittest
 
 import numpy as np
 
+import libpyhat
 from libpyhat.analytics import analytics
 
 
