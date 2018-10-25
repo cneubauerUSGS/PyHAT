@@ -9,22 +9,22 @@ class Test_Analytics(unittest.TestCase):
     np.random.seed(12345)
 
     def setUp(self):
-        self.series = np.random.rand(25)
+        self.arg = np.random.rand(25)
 
     def test_band_minima(self):
-        minidx, minvalue = analytics.band_minima(self.series)
+        minidx, minvalue = analytics.band_minima(self.arg)
         self.assertEqual(minidx, 24)
         self.assertAlmostEqual(minvalue, 0.042715304)
 
-        minidx, minvalue = analytics.band_minima(self.series, 0, 7)
+        minidx, minvalue = analytics.band_minima(self.arg, 0, 7)
         self.assertEqual(minidx, 0)
         self.assertAlmostEqual(minvalue, 0.225637606)
 
         with self.assertRaises(ValueError):
-            minidx, minvalue = analytics.band_minima(self.series, 6, 1)
+            minidx, minvalue = analytics.band_minima(self.arg, 6, 1)
 
     def test_band_center(self):
-        center, center_fit = analytics.band_center(self.series)
+        center, center_fit = analytics.band_center(self.arg)
         self.assertEqual(center[0], 6)
         self.assertAlmostEqual(center[1], 0.506357004)
         self.assertAlmostEqual(center_fit[0], 0.5674192848)
@@ -42,8 +42,8 @@ class Test_Analytics(unittest.TestCase):
         self.assertEqual(area, [370.5])
 
     def test_band_asymmetry(self):
-        assymetry = analytics.band_asymmetry(self.series)
+        assymetry = analytics.band_asymmetry(self.arg)
         self.assertEqual(assymetry, 1)
 
-        assymetry = analytics.band_asymmetry(np.ones(5),0,4)
+        assymetry = analytics.band_asymmetry(self.arg, 0, 10)
         self.assertEqual(assymetry, 0.6)
