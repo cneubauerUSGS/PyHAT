@@ -28,12 +28,12 @@ def band_minima(spectrum, low_endmember=None, high_endmember=None):
 
     if not low_endmember:
         low_endmember = 0
-
     if not high_endmember:
-        high_endmember = -1
+        high_endmember = spectrum.size
+    else:
+        high_endmember += 1
 
     slice = spectrum[low_endmember:high_endmember]
-
     minvalue = np.amin(slice)
     minidx = np.where(slice == minvalue)[0]
 
@@ -45,7 +45,9 @@ def band_center(spectrum, low_endmember=None, high_endmember=None, degree=3):
     if not low_endmember:
         low_endmember = 0
     if not high_endmember:
-        high_endmember = -1
+        high_endmember = spectrum.size
+    else:
+        high_endmember += 1
 
     slice = spectrum[low_endmember:high_endmember]
     slice_indices = np.indices(slice.shape)[0]
@@ -66,7 +68,9 @@ def band_area(spectrum, low_endmember=None, high_endmember=None):
     if not low_endmember:
         low_endmember = 0
     if not high_endmember:
-        high_endmember = -1
+        high_endmember = spectrum.size
+    else:
+        high_endmember += 1
 
     slice = spectrum[low_endmember:high_endmember]
     return np.trapz(np.where(slice <= 1.0))
@@ -97,14 +101,14 @@ def band_asymmetry(spectrum, low_endmember=None, high_endmember=None):
     if not low_endmember:
         low_endmember = 0
     if not high_endmember:
-        high_endmember = -1
+        high_endmember = spectrum.size
+    else:
+        high_endmember += 1
 
     slice = spectrum[low_endmember:high_endmember]
 
     center, _ = band_center(slice, low_endmember, high_endmember)
-
     area_left = band_area(slice[:center[0][0]], low_endmember, high_endmember)
     area_right = band_area(slice[center[0][0]:], low_endmember, high_endmember)
-
     asymmetry = abs((area_left - area_right) / (area_left + area_right))
     return asymmetry[0]
