@@ -1,1 +1,1 @@
-from . analytics import analytics
+from . import analytics

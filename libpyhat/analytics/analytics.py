@@ -1,6 +1,4 @@
 import numpy as np
-from pandas import Series
-
 
 def band_minima(spectrum, low_endmember=None, high_endmember=None):
     """
