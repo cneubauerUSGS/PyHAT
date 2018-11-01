@@ -1,7 +1,11 @@
 import math
 
 import numpy as np
-from pandas import Series
+import pandas as pd
+from libpyhat.data.spectra import Spectra
+from libpyhat.data.spectrum import Spectrum
+
+
 
 def band_minima(spectrum, low_endmember=None, high_endmember=None):
     """
@@ -117,4 +121,32 @@ def band_asymmetry(spectrum, low_endmember=None, high_endmember=None, degree=3):
     area_right = band_area(sub_spectrum[center_idx:])
 
     asymmetry = abs((area_left - area_right) / (area_left + area_right))
-    return asymmetry[0]
+    return asymmetry
+
+
+def analytics_series(obj_spectrum, func, low_endmember=None, high_endmember=None):
+    if low_endmember:
+        low_endmember = np.where(obj_spectrum.data.index==low_endmember)
+    if high_endmember:
+        high_endmember = np.where(obj_spectrum.data.index==high_endmember)
+
+    ret = func(obj_spectrum.data.values, low_endmember, high_endmember)
+    if func is band_minima:
+        wavelengths = obj_spectrum.data.index[ret[0]]
+        ret = wavelengths, ret[1]
+    elif func is band_center:
+        wavelengths = obj_spectrum.data.index[ret[0][0]]
+        center_fit = obj_spectrum.copy()
+        center_fit.loc[0:len(ret[1])] = ret[1]
+        ret = center_fit
+    return ret
+
+def run_analytics(obj, func, low_endmember=None, high_endmember=None):
+    if type(obj) is Spectrum:
+        return analytics_series(obj, func, low_endmember, high_endmember)
+    else:
+        if func is band_center:
+            index = obj.index
+        else:
+            index = None
+        return Spectra(pd.DataFrame(data = np.transpose([analytics_series(obj[i], func, low_endmember, high_endmember) for i in obj.columns]), columns = obj.columns, index = index))
