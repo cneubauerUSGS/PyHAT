@@ -6,7 +6,6 @@ from libpyhat.data.spectra import Spectra
 from libpyhat.data.spectrum import Spectrum
 
 
-
 def band_minima(spectrum, low_endmember=None, high_endmember=None):
     """
     Given two end members, find the minimum observed value inclusively
@@ -45,6 +44,7 @@ def band_minima(spectrum, low_endmember=None, high_endmember=None):
 
     return minidx, minvalue
 
+
 def band_center(spectrum, low_endmember=None, high_endmember=None, degree=3):
 
     if not low_endmember:
@@ -64,6 +64,7 @@ def band_center(spectrum, low_endmember=None, high_endmember=None, degree=3):
 
     return center, center_fit
 
+
 def band_area(spectrum, low_endmember=None, high_endmember=None):
     """
     Compute the area under the curve between two endpoints where the
@@ -78,6 +79,7 @@ def band_area(spectrum, low_endmember=None, high_endmember=None):
 
     sub_spectrum = spectrum[low_endmember:high_endmember]
     return np.trapz(np.where(sub_spectrum <= 1.0))
+
 
 def band_asymmetry(spectrum, low_endmember=None, high_endmember=None, degree=3):
     """
@@ -136,17 +138,20 @@ def analytics_series(obj_spectrum, func, low_endmember=None, high_endmember=None
         ret = wavelengths, ret[1]
     elif func is band_center:
         wavelengths = obj_spectrum.data.index[ret[0][0]]
-        center_fit = obj_spectrum.copy()
-        center_fit.loc[0:len(ret[1])] = ret[1]
-        ret = center_fit
+        center_fit = pd.Series(ret[1], index=obj_spectrum.data.index)
+        ret = wavelengths, center_fit
     return ret
+
 
 def run_analytics(obj, func, low_endmember=None, high_endmember=None):
     if type(obj) is Spectrum:
         return analytics_series(obj, func, low_endmember, high_endmember)
     else:
         if func is band_center:
-            index = obj.index
+            index = obj.index[0:269]
+            series = [analytics_series(obj[i], func, low_endmember, high_endmember) for i in obj.columns]
+            centers, center_fits = zip(*series)
+            return pd.DataFrame(data = np.transpose(center_fits), columns = obj.columns, index = index), pd.Series(centers, index=obj.columns)
+            
         else:
-            index = None
-        return Spectra(pd.DataFrame(data = np.transpose([analytics_series(obj[i], func, low_endmember, high_endmember) for i in obj.columns]), columns = obj.columns, index = index))
+            return pd.Series([analytics_series(obj[i], func, low_endmember, high_endmember) for i in obj.columns], index = obj.columns)
